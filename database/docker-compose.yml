@@ -8,7 +8,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=customer_db
 
   station-db:
     build: stations_db/.
@@ -17,7 +16,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=stations_db
 
   station-1-db:
     build: station_1_db/.
@@ -26,7 +24,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=station_1_db
 
   station-2-db:
     build: station_2_db/.
@@ -35,7 +32,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=station_2_db
 
   station-3-db:
     build: station_3_db/.
@@ -44,7 +40,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=station_3_db
 
   queue:
     image: rabbitmq:alpine
