@@ -1,23 +1,17 @@
-package at.backendservice.model;
+package dispatcher.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDate;
 import java.util.UUID;
 
-@AllArgsConstructor
 public class Invoice {
     private UUID id;
     private int customerId;
 
-    public Invoice() {
-        this.id = UUID.randomUUID();;
-    }
-
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public int getCustomerId() {
@@ -27,6 +21,4 @@ public class Invoice {
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
-
-
 }

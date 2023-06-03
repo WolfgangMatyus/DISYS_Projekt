@@ -1,17 +1,12 @@
-package at.backendservice.controler;
+package at.backendservice.controller;
 
 import at.backendservice.model.Invoice;
 import at.backendservice.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -24,9 +19,14 @@ public class BackendController {
     }
 
     @PostMapping("/invoices/{customerID}")
-    public String postInvoice(@PathVariable int customerID) {
+    public String postInvoice(@PathVariable int customerID) throws IOException, TimeoutException {
 
-        Invoice invoice = new Invoice("");
+        Invoice invoice = invoiceService.createInvoiceByCustomer(customerID);
+
+        String invoiceAsJSON = invoiceService.invoiceToString(invoice);
+        invoiceService.sendToDispatcherService(invoiceAsJSON, "createInvoice");
+
+
 
         // ----------------------------------------------------------------------------------------
         // ABLAUF:
