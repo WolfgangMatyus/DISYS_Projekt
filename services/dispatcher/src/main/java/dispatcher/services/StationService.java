@@ -1,14 +1,24 @@
 package dispatcher.services;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConnectionFactory;
+import dispatcher.model.Station;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
 public class StationService {
 
-    public void getStationsFromDB(String url, String user,String password) {
+    public static ArrayList<Station> getStationsFromDB(String url, String user, String password) {
+
+        ArrayList result = new ArrayList<Station>();
         try {
             Connection connection = DriverManager.getConnection(url, user, password);
 
@@ -18,18 +28,26 @@ public class StationService {
 
             while (resultSet.next()) {
                 // Daten aus dem ResultSet extrahieren
-                int id = resultSet.getInt("id");
-                String dbUrl = resultSet.getString("db_url");
 
-                System.out.println("ID: " + id + ", dbUrl: " + dbUrl);
+                Station station = new Station();
+                station.setId(resultSet.getInt("id"));
+                station.setUrl(resultSet.getString("db_url"));
+
+                result.add(station);
+                System.out.println("ID: " + station.getId() + ", dbUrl: " + station.getUrl());
             }
 
             // Verbindung und Ressourcen schließen
             resultSet.close();
             statement.close();
             connection.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return result;
     }
+
+
+
 }

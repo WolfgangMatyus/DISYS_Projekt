@@ -1,6 +1,6 @@
 package at.backendservice.controller;
 
-import at.backendservice.model.Invoice;
+import at.backendservice.model.BackendDispatcherMessage;
 import at.backendservice.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +21,9 @@ public class BackendController {
     @PostMapping("/invoices/{customerID}")
     public String postInvoice(@PathVariable int customerID) throws IOException, TimeoutException {
 
-        Invoice invoice = invoiceService.createInvoiceByCustomer(customerID);
+        BackendDispatcherMessage dispatcherMessage = invoiceService.createInvoiceByCustomer(customerID);
 
-        String invoiceAsJSON = invoiceService.invoiceToString(invoice);
-        invoiceService.sendToDispatcherService(invoiceAsJSON, "createInvoice");
+        invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
 
 
 

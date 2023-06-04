@@ -1,23 +1,21 @@
 package at.backendservice.model;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @AllArgsConstructor
-public class Invoice {
-    private UUID id;
+public class BackendDispatcherMessage {
+    private UUID invoiceId;
     private int customerId;
 
-    public Invoice() {
-        this.id = UUID.randomUUID();;
+    public BackendDispatcherMessage() {
+        this.invoiceId = UUID.randomUUID();;
     }
 
-    public UUID getId() {
-        return id;
+    public UUID getInvoiceId() {
+        return invoiceId;
     }
 
     public int getCustomerId() {
@@ -28,5 +26,9 @@ public class Invoice {
         this.customerId = customerId;
     }
 
+
+    public String toJSON() {
+        return new Gson().toJson(this);
+    }
 
 }

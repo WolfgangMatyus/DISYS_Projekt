@@ -2,16 +2,16 @@ package dispatcher.model;
 
 import java.util.UUID;
 
-public class Invoice {
-    private UUID id;
+public class BackendDispatcherMessage {
+    private UUID invoiceId;
     private int customerId;
 
-    public UUID getId() {
-        return id;
+    public BackendDispatcherMessage() {
+        this.invoiceId = UUID.randomUUID();;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public UUID getInvoiceId() {
+        return invoiceId;
     }
 
     public int getCustomerId() {
@@ -21,4 +21,6 @@ public class Invoice {
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
+
+
 }

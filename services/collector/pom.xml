@@ -8,11 +8,11 @@
         <version>3.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>dispatcher</groupId>
-    <artifactId>DispatcherService</artifactId>
+    <groupId>collector</groupId>
+    <artifactId>CollectorService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>DispatcherService</name>
-    <description>DispatcherService</description>
+    <name>CollectorService</name>
+    <description>CollectorService</description>
     <properties>
         <java.version>17</java.version>
     </properties>

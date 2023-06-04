@@ -1,4 +1,4 @@
-package dispatcher;
+package receiver;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
@@ -6,15 +6,16 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-import dispatcher.model.Invoice;
+import receiver.model.CollectorReceiverMessage;
+import receiver.model.DispatcherReceiverMessage;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
-public class DispatcherService {
+public class ReceiverService {
     private static final String EXCHANGE_NAME = "createInvoice";
-    private static final String ROUTING_KEY = "dispatcher";
+    private static final String ROUTING_KEY = "receiver";
 
     public static void main(String[] args) throws Exception {
         startService();
@@ -34,16 +35,33 @@ public class DispatcherService {
         System.out.println("Waiting for messages. To exit press CTRL+C");
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String invoiceString = new String(delivery.getBody(), StandardCharsets.UTF_8);
+            String receiverMessageString = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-            System.out.println("Dispatcher received message: " + invoiceString);
+            System.out.println("Receiver received message from dispatcher: " + receiverMessageString);
 
             // jsonObject = new JSONObject(invoice);
 
-            Invoice invoice = new Gson().fromJson(invoiceString, Invoice.class);
+            String[] parts = receiverMessageString.split("::");
+            String sender = parts[0];
+            String content = parts[1];
 
-            System.out.println("id" + invoice.getId());
-            System.out.println("customer_id" + invoice.getCustomerId());
+
+            if(sender == "FROM_COLLECTOR") {
+                CollectorReceiverMessage receiverMessage = new Gson().fromJson(receiverMessageString, CollectorReceiverMessage.class);
+
+                // IN ARRAY ENTRY hinzufügen
+
+            } else if(sender == "FROM_DISPATCHER") {
+                DispatcherReceiverMessage dispatcherReceiverMessage = new Gson().fromJson(receiverMessageString, DispatcherReceiverMessage.class);
+
+
+                // ARRAY SPEICHERN
+
+            } else {
+                System.out.println("Sender not found!");
+            }
+
+
 
 
 
