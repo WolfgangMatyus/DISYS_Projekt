@@ -6,8 +6,11 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
+import receiver.model.Charge;
 import receiver.model.CollectorReceiverMessage;
 import receiver.model.DispatcherReceiverMessage;
+import receiver.model.ReceiverPDFGeneratorMessage;
+import receiver.services.DataCollectorService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -47,13 +50,34 @@ public class ReceiverService {
 
 
             if(sender == "FROM_COLLECTOR") {
-                CollectorReceiverMessage receiverMessage = new Gson().fromJson(receiverMessageString, CollectorReceiverMessage.class);
+                CollectorReceiverMessage collectorReceiverMessage = new Gson().fromJson(receiverMessageString, CollectorReceiverMessage.class);
 
                 // IN ARRAY ENTRY hinzufügen
+
+                for(int i = 0; i < DataCollectorService.getReceiverPDFGeneratorMessages().size(); i++) {
+
+                    if(DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getInvoiceId() == collectorReceiverMessage.getInvoiceId()){
+                        for(int k = 0; k < DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().size(); k++) {
+                            if(DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).getId() == collectorReceiverMessage.getStationId()) {
+
+                                DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).setCharges(collectorReceiverMessage.getCharges());
+                            }
+
+                        }
+                    }
+                }
 
             } else if(sender == "FROM_DISPATCHER") {
                 DispatcherReceiverMessage dispatcherReceiverMessage = new Gson().fromJson(receiverMessageString, DispatcherReceiverMessage.class);
 
+
+
+                ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage = new ReceiverPDFGeneratorMessage();
+                receiverPDFGeneratorMessage.setInvoiceId(dispatcherReceiverMessage.getInvoiceId());
+                receiverPDFGeneratorMessage.setCustomerId(dispatcherReceiverMessage.getCustomerId());
+                receiverPDFGeneratorMessage.setStations(dispatcherReceiverMessage.getAvailableStations());
+
+                DataCollectorService.addReceiverPDFGeneratorMessage(receiverPDFGeneratorMessage);
 
                 // ARRAY SPEICHERN
 

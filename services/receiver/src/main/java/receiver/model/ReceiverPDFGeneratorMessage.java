@@ -8,7 +8,7 @@ import java.util.UUID;
 public class ReceiverPDFGeneratorMessage {
     private UUID invoiceId;
     private int customerId;
-    private ArrayList<CollectorReceiverMessage> stationcharges = new ArrayList<CollectorReceiverMessage>();
+    private ArrayList<Station> stations = new ArrayList<Station>();
 
 
     public UUID getInvoiceId() {
@@ -27,11 +27,15 @@ public class ReceiverPDFGeneratorMessage {
         this.customerId = customerId;
     }
 
-    public ArrayList<CollectorReceiverMessage> getStationcharges() {
-        return stationcharges;
+    public ArrayList<Station> getStations() {
+        return stations;
     }
 
-    public void setStationcharges(ArrayList<CollectorReceiverMessage> stationcharges) {
-        this.stationcharges = stationcharges;
+    public void setStations(ArrayList<Station> stations) {
+        this.stations = stations;
+    }
+
+    public void addStation(Station station) {
+        this.stations.add(station);
     }
 }

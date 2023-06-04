@@ -24,4 +24,12 @@ public class Station {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    public void setCharges(ArrayList<Charge> charges) {
+        this.charges = charges;
+    }
+
+    public void addCharge(Charge charge) {
+        this.charges.add(charge);
+    }
 }

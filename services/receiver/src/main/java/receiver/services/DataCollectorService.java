@@ -1,18 +1,21 @@
 package receiver.services;
 
-import receiver.model.Invoice;
+
+import receiver.model.ReceiverPDFGeneratorMessage;
 
 import java.util.ArrayList;
 
 public class DataCollectorService {
 
-    private ArrayList<Invoice> invoices;
+    private static ArrayList<ReceiverPDFGeneratorMessage> receiverPDFGeneratorMessages;
 
-    public ArrayList<Invoice> getInvoices() {
-        return invoices;
+    public static ArrayList<ReceiverPDFGeneratorMessage> getReceiverPDFGeneratorMessages() {
+        return receiverPDFGeneratorMessages;
     }
 
-    public void addInvoice(Invoice invoice) {
-        this.invoices.add(invoice);
+    public static void addReceiverPDFGeneratorMessage(ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage) {
+        receiverPDFGeneratorMessages.add(receiverPDFGeneratorMessage);
     }
+
+
 }
