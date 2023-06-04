@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS charge (
    id SERIAL PRIMARY KEY,
    kwh REAL NOT NULL,
    customer_id INTEGER NOT NULL,
-   invoice_id INTEGER
+   invoice_id VARCHAR
 );
 
 INSERT INTO charge(id, kwh, customer_id)
