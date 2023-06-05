@@ -1,4 +1,4 @@
-package receiver.model;
+package generator.model;
 
 import com.google.gson.Gson;
 
@@ -9,7 +9,6 @@ public class ReceiverPDFGeneratorMessage {
     private UUID invoiceId;
     private int customerId;
     private ArrayList<Station> stations = new ArrayList<Station>();
-
 
 
     public UUID getInvoiceId() {

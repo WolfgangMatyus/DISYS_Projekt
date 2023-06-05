@@ -1,14 +1,13 @@
-package collector.model;
-
-import java.util.UUID;
+package generator.model;
 
 public class Charge {
     private int id;
+    private int stationId;
     private int customerId;
     private double kwh;
-    private UUID invoiceId;
+    private String invoiceId;
 
-    public Charge(int id, int customerId, double kwh, UUID invoiceId) {
+    public Charge(int id, int customerId, double kwh, String invoiceId) {
         this.id = id;
         this.customerId = customerId;
         this.kwh = kwh;
@@ -39,11 +38,19 @@ public class Charge {
         this.kwh = kwh;
     }
 
-    public UUID getInvoiceId() {
+    public String getInvoiceId() {
         return invoiceId;
     }
 
-    public void setInvoiceId(UUID invoiceId) {
+    public void setInvoiceId(String invoiceId) {
         this.invoiceId = invoiceId;
+    }
+
+    public int getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(int stationId) {
+        this.stationId = stationId;
     }
 }

@@ -8,11 +8,11 @@
         <version>3.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>dispatcher</groupId>
-    <artifactId>DispatcherService</artifactId>
+    <groupId>generator</groupId>
+    <artifactId>GeneratorService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>DispatcherService</name>
-    <description>DispatcherService</description>
+    <name>GeneratorService</name>
+    <description>GeneratorService</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -25,11 +25,6 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.24</version>
         </dependency>
     </dependencies>
 </project>

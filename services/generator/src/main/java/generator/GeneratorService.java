@@ -1,4 +1,4 @@
-package dispatcher;
+package generator;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
@@ -6,15 +6,15 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-import dispatcher.model.Invoice;
+import generator.model.ReceiverPDFGeneratorMessage;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
-public class DispatcherService {
+public class GeneratorService {
     private static final String EXCHANGE_NAME = "createInvoice";
-    private static final String ROUTING_KEY = "dispatcher";
+    private static final String ROUTING_KEY = "generator";
 
     public static void main(String[] args) throws Exception {
         startService();
@@ -34,16 +34,16 @@ public class DispatcherService {
         System.out.println("Waiting for messages. To exit press CTRL+C");
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String invoiceString = new String(delivery.getBody(), StandardCharsets.UTF_8);
+            String receiverGeneratorString = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-            System.out.println("Dispatcher received message: " + invoiceString);
+            System.out.println("Generator received message: " + receiverGeneratorString);
 
             // jsonObject = new JSONObject(invoice);
 
-            Invoice invoice = new Gson().fromJson(invoiceString, Invoice.class);
+            ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage = new Gson().fromJson(receiverGeneratorString, ReceiverPDFGeneratorMessage.class);
 
-            System.out.println("id" + invoice.getId());
-            System.out.println("customer_id" + invoice.getCustomerId());
+            System.out.println("invoice_id: " + receiverPDFGeneratorMessage.getInvoiceId());
+            System.out.println("customer_id: " + receiverPDFGeneratorMessage.getCustomerId());
 
 
 

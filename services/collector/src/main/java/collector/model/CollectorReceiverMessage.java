@@ -10,7 +10,7 @@ public class CollectorReceiverMessage {
     private UUID invoiceId;
     private int customerId;
     private Integer stationId;
-    private ArrayList<Charge> charges;
+    private ArrayList<Charge> charges = new ArrayList<>();
 
     public UUID getInvoiceId() {
         return invoiceId;
@@ -36,9 +36,7 @@ public class CollectorReceiverMessage {
         this.stationId = stationId;
     }
 
-    public ArrayList<Charge> getCharges() {
-        return charges;
-    }
+    public ArrayList<Charge> getCharges() {return charges;}
 
     public void setCharges(ArrayList<Charge> charges) {
         this.charges = charges;

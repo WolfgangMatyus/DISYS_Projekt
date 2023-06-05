@@ -1,4 +1,4 @@
-package dispatcher.model;
+package generator.model;
 
 import java.util.UUID;
 

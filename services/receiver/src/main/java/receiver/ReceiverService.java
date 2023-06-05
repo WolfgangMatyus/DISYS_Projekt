@@ -40,7 +40,7 @@ public class ReceiverService {
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String receiverMessageString = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-            System.out.println("Receiver received message from dispatcher: " + receiverMessageString);
+
 
             // jsonObject = new JSONObject(invoice);
 
@@ -48,16 +48,35 @@ public class ReceiverService {
             String sender = parts[0];
             String content = parts[1];
 
+            if(sender.equals("FROM_COLLECTOR")) {
+                System.out.println("Receiver received message from collector: " + receiverMessageString);
+            } else if(sender.equals("FROM_DISPATCHER")){
+                System.out.println("Receiver received message from dispatcher: " + receiverMessageString);
+            } else System.out.println("sender not found!");
 
-            if(sender == "FROM_COLLECTOR") {
-                CollectorReceiverMessage collectorReceiverMessage = new Gson().fromJson(receiverMessageString, CollectorReceiverMessage.class);
+            System.out.println("sender: " + sender);
+            System.out.println("content: " + content);
+
+            ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage = new ReceiverPDFGeneratorMessage();
+
+
+
+            if(sender.equals("FROM_COLLECTOR")){
+                // System.out.println("sender is from collector");
+
+                CollectorReceiverMessage collectorReceiverMessage = new Gson().fromJson(content, CollectorReceiverMessage.class);
+
+                // receiverPDFGeneratorMessage.setInvoiceId(collectorReceiverMessage.getInvoiceId());
+                // receiverPDFGeneratorMessage.setCustomerId(collectorReceiverMessage.getCustomerId());
 
                 // IN ARRAY ENTRY hinzufügen
 
+
                 for(int i = 0; i < DataCollectorService.getReceiverPDFGeneratorMessages().size(); i++) {
 
-                    if(DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getInvoiceId() == collectorReceiverMessage.getInvoiceId()){
+                    if(DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getInvoiceId().equals(collectorReceiverMessage.getInvoiceId())){
                         for(int k = 0; k < DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().size(); k++) {
+
                             if(DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).getId() == collectorReceiverMessage.getStationId()) {
 
                                 DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).setCharges(collectorReceiverMessage.getCharges());
@@ -67,25 +86,35 @@ public class ReceiverService {
                     }
                 }
 
-            } else if(sender == "FROM_DISPATCHER") {
-                DispatcherReceiverMessage dispatcherReceiverMessage = new Gson().fromJson(receiverMessageString, DispatcherReceiverMessage.class);
+                // System.out.println("from collector received");
+
+            } else if(sender.equals("FROM_DISPATCHER")){
+                // System.out.println("sender is from_dispatcher");
 
 
 
-                ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage = new ReceiverPDFGeneratorMessage();
+                DispatcherReceiverMessage dispatcherReceiverMessage = new Gson().fromJson(content, DispatcherReceiverMessage.class);
                 receiverPDFGeneratorMessage.setInvoiceId(dispatcherReceiverMessage.getInvoiceId());
                 receiverPDFGeneratorMessage.setCustomerId(dispatcherReceiverMessage.getCustomerId());
                 receiverPDFGeneratorMessage.setStations(dispatcherReceiverMessage.getAvailableStations());
 
                 DataCollectorService.addReceiverPDFGeneratorMessage(receiverPDFGeneratorMessage);
 
+                // System.out.println("from dispatcher received");
+
+
                 // ARRAY SPEICHERN
 
-            } else {
+            } else{
                 System.out.println("Sender not found!");
             }
 
-
+            // SEND TO PDF_Generator
+            try {
+                DataCollectorService.sendDataToPDFGenerator(receiverPDFGeneratorMessage.toJSON(), EXCHANGE_NAME);
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
 
 
 

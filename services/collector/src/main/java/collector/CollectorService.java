@@ -49,14 +49,16 @@ public class CollectorService {
 
 
             ArrayList<Charge> charges = StationService.getChargesForCustomerFromDB(
-                    "jdbc:postgresql://localhost:30002/stationdb",
+                    "jdbc:postgresql://" + dispatcherCollectorMessage.getStationURL() + "/stationdb",
                     "postgres",
                     "postgres",
-                    dispatcherCollectorMessage.getCustomerId());
+                    dispatcherCollectorMessage.getCustomerId(),
+                    dispatcherCollectorMessage.getInvoiceId());
 
 
             System.out.println("invoiceId: " + dispatcherCollectorMessage.getInvoiceId());
             System.out.println("customerId: " + dispatcherCollectorMessage.getCustomerId());
+            System.out.println("stationURL: " + dispatcherCollectorMessage.getStationURL());
 
             CollectorReceiverMessage collectorReceiverMessage = new CollectorReceiverMessage();
 
