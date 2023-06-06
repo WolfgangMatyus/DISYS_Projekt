@@ -2,7 +2,6 @@ package generator.model;
 
 public class Charge {
     private int id;
-    private int stationId;
     private int customerId;
     private double kwh;
     private String invoiceId;
@@ -46,11 +45,4 @@ public class Charge {
         this.invoiceId = invoiceId;
     }
 
-    public int getStationId() {
-        return stationId;
-    }
-
-    public void setStationId(int stationId) {
-        this.stationId = stationId;
-    }
 }

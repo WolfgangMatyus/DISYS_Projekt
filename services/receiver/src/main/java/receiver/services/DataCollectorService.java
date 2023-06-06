@@ -3,11 +3,14 @@ package receiver.services;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
+import receiver.model.Charge;
 import receiver.model.ReceiverPDFGeneratorMessage;
+import receiver.model.Station;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class DataCollectorService {
@@ -16,6 +19,15 @@ public class DataCollectorService {
 
     public static ArrayList<ReceiverPDFGeneratorMessage> getReceiverPDFGeneratorMessages() {
         return receiverPDFGeneratorMessages;
+    }
+
+    public static ReceiverPDFGeneratorMessage getReceiverPDFGeneratorMessageByInvoiceId(UUID invoiceId) {
+        for(ReceiverPDFGeneratorMessage message : receiverPDFGeneratorMessages) {
+            if(message.getInvoiceId().equals(invoiceId)) {
+                return message;
+            }
+        }
+        return null;
     }
 
     public static void addReceiverPDFGeneratorMessage(ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage) {
@@ -42,4 +54,19 @@ public class DataCollectorService {
     }
 
 
+    public static Boolean isAllCollectorDataCompleted(UUID invoiceId) {
+
+        Boolean isNotCompleted = Boolean.FALSE;
+
+        for(ReceiverPDFGeneratorMessage message : receiverPDFGeneratorMessages) {
+            if(message.getInvoiceId().equals(invoiceId)) {
+                for(Station station : message.getStations()) {
+                    if(station.getCharges().isEmpty()) {
+                        isNotCompleted = Boolean.TRUE;
+                    }
+                }
+            }
+        }
+        return isNotCompleted;
+    }
 }

@@ -29,6 +29,10 @@ public class Station {
         this.charges = charges;
     }
 
+    public ArrayList<Charge> getCharges() {
+        return this.charges;
+    }
+
     public void addCharge(Charge charge) {
         this.charges.add(charge);
     }
