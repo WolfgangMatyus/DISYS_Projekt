@@ -28,7 +28,8 @@ public class StationService {
                         resultSet.getInt("id"),
                         resultSet.getInt("customer_id"),
                         resultSet.getDouble("kwh"),
-                        invoice_id);
+                        invoice_id,
+                        resultSet.getDouble("price"));
 
                 result.add(charge);
 

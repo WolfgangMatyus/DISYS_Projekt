@@ -74,38 +74,6 @@ public class CollectorService {
             }
 
 
-
-            //int customerId = jsonObject.getAsString("customerId");
-
-//
-//            System.out.println("Service1 received message: " + content);
-//            System.out.println("Service1 service chain: " + serviceChain);
-
-//            // remove active service from chain
-//            String[] serviceChainArray = serviceChain.split(",");
-//            String nextService = "";
-//
-//            if (serviceChainArray.length > 1) {
-//                System.out.println("next: " + serviceChainArray[1]);
-//                nextService = serviceChainArray[1];
-//                serviceChain = serviceChain.substring(serviceChain.indexOf(",") + 1);
-//            } else {
-//                // Kein weiteres Service in der Kette
-//                nextService = "receiver";
-//                serviceChain = "";
-//            }
-//
-//            String reversed_content = reverseString(content);
-
-//            try {
-//                channel.basicPublish(EXCHANGE_NAME, nextService, null,
-//                        (serviceChain + ":" + reversed_content).getBytes(StandardCharsets.UTF_8));
-//                System.out.println("Service1 sent message to " + nextService);
-//            }
-//            catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-
         };
         channel.queueBind(queueName, EXCHANGE_NAME, ROUTING_KEY);
         channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});

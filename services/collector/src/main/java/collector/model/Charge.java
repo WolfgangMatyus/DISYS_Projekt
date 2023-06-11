@@ -7,12 +7,14 @@ public class Charge {
     private int customerId;
     private double kwh;
     private UUID invoiceId;
+    private double price;
 
-    public Charge(int id, int customerId, double kwh, UUID invoiceId) {
+    public Charge(int id, int customerId, double kwh, UUID invoiceId, double price) {
         this.id = id;
         this.customerId = customerId;
         this.kwh = kwh;
         this.invoiceId = invoiceId;
+        this.price = price;
     }
 
     public int getId() {

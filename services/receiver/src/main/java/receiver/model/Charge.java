@@ -5,12 +5,14 @@ public class Charge {
     private int customerId;
     private double kwh;
     private String invoiceId;
+    private double price;
 
-    public Charge(int id, int customerId, double kwh, String invoiceId) {
+    public Charge(int id, int customerId, double kwh, String invoiceId, double price) {
         this.id = id;
         this.customerId = customerId;
         this.kwh = kwh;
         this.invoiceId = invoiceId;
+        this.price = price;
     }
 
     public int getId() {

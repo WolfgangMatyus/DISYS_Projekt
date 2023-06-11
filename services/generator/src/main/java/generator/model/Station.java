@@ -25,6 +25,9 @@ public class Station {
         this.url = url;
     }
 
+    public ArrayList<Charge> getCharges() {
+        return this.charges;
+    }
     public void setCharges(ArrayList<Charge> charges) {
         this.charges = charges;
     }
