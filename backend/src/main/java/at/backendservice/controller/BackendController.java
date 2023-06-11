@@ -3,6 +3,12 @@ package at.backendservice.controller;
 import at.backendservice.model.BackendDispatcherMessage;
 import at.backendservice.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,20 +31,48 @@ public class BackendController {
 
         invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
 
-        return "POST Request sent\n" +
-                invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
+        return invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
     }
-
-    @GetMapping("/invoices/{customerID}")
-    public String getInvoice(@PathVariable int customerID) {
 
         // get from file storage
+        @GetMapping("/invoices/{invoiceID}")
+        public ResponseEntity<Resource> getInvoice(@PathVariable String invoiceID) {
+            // Pfade oder Speicherort der Dateien im File Storage
+            String storagePath = "Pfad/zum/File/Storage/";
+            String filename = invoiceID + ".pdf";
 
-        // return invoices pdf with download link and creation time
-        return "GET Request sent (return invoices pdf with download link and creation time)";
-        // 404 if not available
+            // Vollständiger Pfad zur PDF-Datei
+            String fullPath = storagePath + filename;
 
-    }
+            // Versuche, die Datei zu laden
+            try {
+                Resource fileResource = new FileSystemResource(fullPath);
+
+                if (fileResource.exists()) {
+                    // Wenn die Datei existiert, gebe sie als Response zurück
+                    // return invoices pdf with download link and creation time
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+                    headers.add(HttpHeaders.LOCATION, fullPath);
+
+                    return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                            .contentType(MediaType.APPLICATION_PDF)
+                            .body(fileResource);
+
+                    // 404 if not available -> in Projekt_UI InvoiceController
+
+                } else {
+                    // Wenn die Datei nicht gefunden wurde, gebe einen Fehler zurück
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+            } catch (Exception e) {
+                // Bei Fehlern während des Ladens gebe einen Fehler zurück
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+
+        }
 
     // ----------------------------------------------------------------------------------------
     // ABLAUF:
