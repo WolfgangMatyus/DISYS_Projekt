@@ -28,7 +28,7 @@ public class InvoiceService {
     }
 
 
-    public void sendToDispatcherService(String dispatcherMessage, String EXCHANGE_NAME) throws IOException, TimeoutException {
+    public String sendToDispatcherService(String dispatcherMessage, String EXCHANGE_NAME) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         factory.setPort(30003);
@@ -45,6 +45,7 @@ public class InvoiceService {
             System.out.println(" Sent invoice to dispatcher: '" + dispatcherMessage);
 
         }
+        return dispatcherMessage;
     }
 
     public static void setPDFReceiver() throws IOException, TimeoutException {
