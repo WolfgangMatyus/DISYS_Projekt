@@ -1,5 +1,7 @@
-package at.projekt_ui;
+package at.projekt_ui.controller;
 
+import at.projekt_ui.model.Invoice;
+import com.google.gson.Gson;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +14,8 @@ import java.io.InputStreamReader;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import java.util.UUID;
 
 public class InvoiceController {
 
@@ -32,6 +36,7 @@ public class InvoiceController {
         String customerID = customerIDField.getText();
         // Perform API call and handle the result
         String apiUrlCustID = API_URL + customerID;
+        final UUID[] invoiceID = {null};
 
         Task<String> apiCallTask = new Task<String>() {
             @Override
@@ -48,14 +53,16 @@ public class InvoiceController {
                     String inputLine;
                     StringBuilder response = new StringBuilder();
                     while ((inputLine = in.readLine()) != null) {
-                        response.append("Response: ").append(inputLine);
+                        //response.append(inputLine);
+                        Invoice invoice = new Gson().fromJson(inputLine, Invoice.class);
+                        invoiceID[0] = invoice.getInvoiceId();
+                        response.append("INVOICE: " + invoiceID[0]);
                     }
                     in.close();
                     return response.toString();
                 } else {
                     return "HTTP Error: " + responseCode;
                 }
-
             }
         };
 
@@ -78,6 +85,7 @@ public class InvoiceController {
                 int timeout = 5000; // Timeout after 5 seconds
                 long startTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - startTime < timeout) {
+                    String apiUrlCustID = API_URL + invoiceID[0];
                     URL url = new URL(apiUrlCustID);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

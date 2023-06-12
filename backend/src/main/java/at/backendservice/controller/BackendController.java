@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 @RestController
@@ -36,6 +37,12 @@ public class BackendController {
 
         // get from file storage
         @GetMapping("/invoices/{invoiceID}")
+        public String getInvoice(@PathVariable UUID invoiceID) {
+
+            // get from file storage
+            return "waiting for file";
+        }
+
         public ResponseEntity<Resource> getInvoice(@PathVariable String invoiceID) {
             // Pfade oder Speicherort der Dateien im File Storage
             String storagePath = "Pfad/zum/File/Storage/";
