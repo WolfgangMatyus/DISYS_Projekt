@@ -1,12 +1,8 @@
 package at.projekt_ui.model;
 
-
-
 import java.util.UUID;
 
-
 public class Invoice {
-
 
     public UUID getInvoiceId() {
         return invoiceId;
