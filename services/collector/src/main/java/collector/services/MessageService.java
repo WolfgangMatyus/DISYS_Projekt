@@ -1,13 +1,10 @@
 package collector.services;
 
-import collector.model.Charge;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 public class MessageService {
