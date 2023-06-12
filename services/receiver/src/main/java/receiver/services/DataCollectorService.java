@@ -3,7 +3,7 @@ package receiver.services;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
-import receiver.model.Charge;
+
 import receiver.model.ReceiverPDFGeneratorMessage;
 import receiver.model.Station;
 
@@ -52,7 +52,6 @@ public class DataCollectorService {
 
         }
     }
-
 
     public static Boolean isAllCollectorDataCompleted(UUID invoiceId) {
 

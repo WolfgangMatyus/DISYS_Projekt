@@ -43,10 +43,7 @@ public class CollectorService {
 
             System.out.println("Collector received message: " + collectorMessageJson);
 
-            // jsonObject = new JSONObject(invoice);
-
             DispatcherCollectorMessage dispatcherCollectorMessage = new Gson().fromJson(collectorMessageJson, DispatcherCollectorMessage.class);
-
 
             ArrayList<Charge> charges = StationService.getChargesForCustomerFromDB(
                     "jdbc:postgresql://" + dispatcherCollectorMessage.getStationURL() + "/stationdb",
@@ -54,11 +51,6 @@ public class CollectorService {
                     "postgres",
                     dispatcherCollectorMessage.getCustomerId(),
                     dispatcherCollectorMessage.getInvoiceId());
-
-
-            System.out.println("invoiceId: " + dispatcherCollectorMessage.getInvoiceId());
-            System.out.println("customerId: " + dispatcherCollectorMessage.getCustomerId());
-            System.out.println("stationURL: " + dispatcherCollectorMessage.getStationURL());
 
             CollectorReceiverMessage collectorReceiverMessage = new CollectorReceiverMessage();
 
@@ -72,7 +64,6 @@ public class CollectorService {
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }
-
 
         };
         channel.queueBind(queueName, EXCHANGE_NAME, ROUTING_KEY);

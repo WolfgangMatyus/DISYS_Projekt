@@ -31,7 +31,6 @@ public class BackendController {
         BackendDispatcherMessage dispatcherMessage = invoiceService.createInvoiceByCustomer(customerID);
 
         return invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
-    }
 
         // get from file storage
         @GetMapping("/invoices/{invoiceID}")
