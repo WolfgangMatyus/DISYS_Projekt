@@ -30,8 +30,6 @@ public class BackendController {
 
         BackendDispatcherMessage dispatcherMessage = invoiceService.createInvoiceByCustomer(customerID);
 
-        invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
-
         return invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
     }
 
@@ -45,7 +43,7 @@ public class BackendController {
 
         public ResponseEntity<Resource> getInvoice(@PathVariable String invoiceID) {
             // Pfade oder Speicherort der Dateien im File Storage
-            String storagePath = "Pfad/zum/File/Storage/";
+            String storagePath = InvoiceService.getInvoicesDirectoryPath();
             String filename = invoiceID + ".pdf";
 
             // Vollständiger Pfad zur PDF-Datei
