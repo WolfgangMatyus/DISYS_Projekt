@@ -23,7 +23,7 @@ public class BackendController {
 
         BackendDispatcherMessage dispatcherMessage = invoiceService.createInvoiceByCustomer(customerID);
 
-        invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
+        //invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
 
         return "POST Request sent\n" +
                 invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
