@@ -66,7 +66,7 @@ public class InvoiceService {
 
             PDFGeneratorBackendMessage pdfGeneratorBackendMessage = new Gson().fromJson(pdfGeneratorBackendMessageJSON, PDFGeneratorBackendMessage.class);
 
-            String invoicePath = getInvoicesDirectoryPath() + "/" + pdfGeneratorBackendMessage.getInvoiceId() + ".pdf";
+            String invoicePath = getInvoicesDirectoryPath() + "\\" + pdfGeneratorBackendMessage.getInvoiceId() + ".pdf";
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(invoicePath)) {
                 fileOutputStream.write(pdfGeneratorBackendMessage.getPdfContent());
@@ -74,7 +74,6 @@ public class InvoiceService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
         };
         channel.queueBind(queueName, EXCHANGE_NAME, ROUTING_KEY);
@@ -85,6 +84,7 @@ public class InvoiceService {
     public static String getInvoicesDirectoryPath() {
         File classesDirectory = new File(InvoiceService.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         File invoicesDirectory = new File(classesDirectory.getParent() + "/invoices");
+        System.out.println(invoicesDirectory.canWrite());
         invoicesDirectory.mkdirs();
 
         return invoicesDirectory.getPath();

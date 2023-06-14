@@ -1,23 +1,23 @@
-package at.projekt_ui.controller;
+package at.projekt_ui;
 
 import at.projekt_ui.model.Invoice;
 import com.google.gson.Gson;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.web.WebEngine;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.util.Base64;
 import java.util.UUID;
 
-public class InvoiceController {
+public class InvoiceController{
 
     @FXML
     private static final String API_URL = "http://127.0.0.1:5151/api/v1/invoices/";
@@ -32,11 +32,15 @@ public class InvoiceController {
     private TextField customerIDField;
 
     @FXML
+    private WebEngine webEngine;
+
+
+    @FXML
     private void onGenerateInvoiceClick(ActionEvent event) {
         String customerID = customerIDField.getText();
         // Perform API call and handle the result
         String apiUrlCustID = API_URL + customerID;
-        final UUID[] invoiceID = {null};
+        UUID[] invoiceID = {null};
 
         Task<String> apiCallTask = new Task<String>() {
             @Override
@@ -46,7 +50,6 @@ public class InvoiceController {
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
 
-
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -55,6 +58,7 @@ public class InvoiceController {
                     while ((inputLine = in.readLine()) != null) {
                         //response.append(inputLine);
                         Invoice invoice = new Gson().fromJson(inputLine, Invoice.class);
+
                         invoiceID[0] = invoice.getInvoiceId();
                         response.append("INVOICE: " + invoiceID[0]);
                     }
@@ -78,11 +82,15 @@ public class InvoiceController {
 
         Thread apiCallPOSTThread = new Thread(apiCallTask);
         apiCallPOSTThread.start();
+        startGetRequest(invoiceID);
+    }
 
-        Task<Void> apiCallGETTask = new Task<Void>() {
+    public void startGetRequest(UUID[] invoiceID) {
+
+        Task<String> apiCallGETTask = new Task<String>() {
             @Override
-            protected Void call() throws Exception {
-                int timeout = 5000; // Timeout after 5 seconds
+            protected String call() throws Exception {
+                int timeout = 10000; // Timeout after 10 seconds
                 long startTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - startTime < timeout) {
                     String apiUrlCustID = API_URL + invoiceID[0];
@@ -102,6 +110,16 @@ public class InvoiceController {
                         String responseData = response.toString();
                         System.out.println("GET Response: " + responseData);
                         updateMessage(responseData);
+
+                        // Save the PDF data to a temporary file
+                        File tempFile = File.createTempFile("temp", ".pdf");
+                        try (OutputStream outputStream = new FileOutputStream(tempFile)) {
+                            outputStream.write(Base64.getDecoder().decode(responseData));
+                        }
+
+                        // Load the temporary PDF file into the WebView using WebEngine
+                            webEngine.load("https://www.google.com/");
+
                     } else {
                         System.out.println("GET Connection Error: " + responseCode);
                     }
@@ -109,25 +127,21 @@ public class InvoiceController {
                     // Wait for 1 second before making the next GET request
                     Thread.sleep(1000);
                 }
-
                 return null;
             }
         };
 
-        GETLabel.textProperty().bind(apiCallGETTask.messageProperty());
-
         apiCallGETTask.setOnSucceeded(taskEvent -> {
-            GETLabel.textProperty().unbind();
-            GETLabel.setText("ERROR: 404 Invoice Not Found.");
+            String response = apiCallGETTask.getValue();
+            GETLabel.setText(response);
         });
 
         apiCallGETTask.setOnFailed(taskEvent -> {
-            GETLabel.textProperty().unbind();
             Throwable exception = apiCallGETTask.getException();
             GETLabel.setText("Exception: " + exception.getMessage());
         });
-
-        Thread apiCallGETThread = new Thread(apiCallGETTask);
-        apiCallGETThread.start();
+        // Start the task in a separate thread
+        Thread taskThread = new Thread(apiCallGETTask);
+        taskThread.start();
     }
 }
