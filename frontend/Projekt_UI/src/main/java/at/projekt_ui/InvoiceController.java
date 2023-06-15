@@ -36,20 +36,17 @@ public class InvoiceController {
     @FXML
     private WebView invoiceWebView;
 
-
     @FXML
     private WebEngine webEngine;
 
     @FXML
     private void initialize() {
-        // Erstellen Sie eine WebEngine-Instanz und weisen Sie sie der webEngine-Variable zu
         webEngine = invoiceWebView.getEngine();
     }
 
     @FXML
     private void onGenerateInvoiceClick(ActionEvent event) {
         String customerID = customerIDField.getText();
-        // Perform API call and handle the result
         String apiUrlCustID = API_URL + customerID;
         UUID[] invoiceID = {null};
 
@@ -74,7 +71,6 @@ public class InvoiceController {
                     in.close();
                     return response.toString();
                 } else {
-
                     return "HTTP Error: " + responseCode;
                 }
             }
@@ -96,7 +92,6 @@ public class InvoiceController {
     }
 
     public void startGetRequest(UUID invoiceID) {
-
         Task<Void> apiCallGETTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -105,7 +100,6 @@ public class InvoiceController {
                 while (System.currentTimeMillis() - startTime < timeout) {
                     String apiUrlInvoiceID = API_URL + invoiceID;
                     URL url = new URL(apiUrlInvoiceID);
-                    System.out.println(url);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
                     int responseCode = conn.getResponseCode();
@@ -118,23 +112,20 @@ public class InvoiceController {
                                 buffer.write(data, 0, nRead);
                             }
                             buffer.flush();
-                            // Check if the PDF data is available
                             byte[] pdfData = buffer.toByteArray();
                             if (pdfData.length > 0) {
-                                // Load the PDF data into the WebView using WebEngine
                                 Platform.runLater(() -> {
                                     String base64EncodedData = Base64.getEncoder().encodeToString(pdfData);
+                                    System.out.println(base64EncodedData);
                                     String content = "<embed src=\"data:application/pdf;base64," + base64EncodedData + "\" width=\"100%\" height=\"100%\">";
                                     webEngine.loadContent(content);
                                 });
-                                System.out.println("works");
-                                break; // Exit the loop if the PDF is found
+                                break;
                             }
                         }
                     } else {
                         System.out.println("GET Connection Error: " + responseCode);
                     }
-                    // Wait for 1 second before making the next GET request
                     Thread.sleep(1000);
                 }
                 return null;
@@ -146,7 +137,6 @@ public class InvoiceController {
             GETLabel.setText("Exception: " + exception.getMessage());
         });
 
-        // Start the task in a separate thread
         Thread taskThread = new Thread(apiCallGETTask);
         taskThread.start();
     }
