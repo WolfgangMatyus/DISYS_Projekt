@@ -1,85 +1,66 @@
 package at.projekt_ui;
 
+import com.dansoftware.pdfdisplayer.JSLogListener;
+import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import okhttp3.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class InvoiceApplication extends Application {
-
-    @Override
-    public void start(Stage primaryStage) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("invoice.fxml"));
-            primaryStage.setTitle("Invoice Application");
-            primaryStage.setScene(new Scene(root, 1000, 800));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-}
-
-
-// PDF in WEBVIEW ANZEIGEN:
-/*
-package com.example.pdfviewer;
-
-        import java.nio.file.Path;
-        import java.nio.file.Paths;
-
-        import com.dansoftware.pdfdisplayer.JSLogListener;
-        import com.dansoftware.pdfdisplayer.PDFDisplayer;
-        import javafx.application.Application;
-        import javafx.scene.Scene;
-        import javafx.scene.control.Button;
-        import javafx.scene.layout.VBox;
-        import javafx.stage.Stage;
-
-        import java.io.File;
-
-public class PDFViewerApplication extends Application {
     private boolean visible;
-
-    public class PathUtils {
-
-        public static String getRootPath() {
-            String currentWorkingDir = System.getProperty("user.dir");
-            Path rootPath = Paths.get(currentWorkingDir);
-            return rootPath.toString();
-        }
-    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        String filePath = PathUtils.getRootPath() + "\\S4-DISYS_05_JavaFXBeginning.pdf";
-        System.out.println("Root Path: " + filePath);
-        File pdfFile = new File(filePath);
-        PDFDisplayer displayer = new PDFDisplayer(pdfFile.toURI().toURL());
-        displayer.setSecondaryToolbarToggleVisibility(visible);
-        displayer.setVisibilityOf("sidebarToggle", false);
+        Button btn = new Button("Generate Invoice");
 
-        Button btn = new Button("Hide/Show");
         btn.setOnAction(event -> {
-            displayer.setSecondaryToolbarToggleVisibility(visible = !visible);
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url("http://127.0.0.1:5151/api/v1/invoices/5b39c892-c740-47c2-b4a4-d64d6835e516")
+                    //.url("http://127.0.0.1:5151/api/v1/invoices/{invoiceID}")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try (InputStream inputStream = response.body().byteStream()) {
+                            Path tempFilePath = Files.createTempFile("invoice_", ".pdf");
+                            Files.copy(inputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+                            PDFDisplayer displayer = new PDFDisplayer(tempFilePath.toUri().toURL());
+                            displayer.setSecondaryToolbarToggleVisibility(visible);
+                            displayer.setVisibilityOf("sidebarToggle", false);
+
+                            primaryStage.setScene(new Scene(new VBox(displayer.toNode())));
+                            primaryStage.show();
+                        }
+                    } else {
+                        System.out.println("Failed to retrieve invoice: " + response.code());
+                    }
+                }
+            });
         });
 
         JSLogListener.setOutputStream(System.err);
 
-        primaryStage.setScene(new Scene(new VBox(displayer.toNode(), btn)));
+        primaryStage.setScene(new Scene(new VBox(btn)));
         primaryStage.show();
     }
 
@@ -87,4 +68,5 @@ public class PDFViewerApplication extends Application {
         launch(args);
     }
 }
- */
+
+

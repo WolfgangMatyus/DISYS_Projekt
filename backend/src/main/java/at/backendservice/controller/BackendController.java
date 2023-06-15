@@ -3,6 +3,10 @@ package at.backendservice.controller;
 import at.backendservice.model.BackendDispatcherMessage;
 import at.backendservice.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
@@ -30,6 +34,32 @@ public class BackendController {
         return invoiceService.sendToDispatcherService(dispatcherMessage.toJSON(), "createInvoice");
     }
 
+    @GetMapping("/invoices/{invoiceID}")
+    public ResponseEntity<byte[]> getInvoice(@PathVariable UUID invoiceID) throws IOException {
+        System.out.println("GET reached");
+        String storagePath = InvoiceService.getInvoicesDirectoryPath();
+        String filename = invoiceID + ".pdf";
+        String filePath = storagePath + "/" + filename;
+
+        File file = new File(filePath);
+        if (file.exists()) {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                byte[] data = new byte[(int) file.length()];
+                fis.read(data);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_PDF);
+                headers.setContentDisposition(ContentDisposition.builder("attachment").filename(filename).build());
+
+                return ResponseEntity.ok().headers(headers).body(data);
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+}
+
+/*
     @GetMapping("/invoices/{invoiceID}")
     public String getInvoice(@PathVariable UUID invoiceID) throws IOException {
         String storagePath = InvoiceService.getInvoicesDirectoryPath();
@@ -98,3 +128,5 @@ public class BackendController {
     // chain2: rot (dispatcher), lila (receiver), gelb (pdfgenerator)
 
 }
+
+*/

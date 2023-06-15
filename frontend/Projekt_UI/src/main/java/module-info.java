@@ -1,18 +1,10 @@
 module at.projekt_ui {
     requires javafx.controls;
+    requires PDFViewerFX;
+    requires gson;
     requires javafx.fxml;
     requires javafx.web;
-    requires jdk.jsobject;
-    requires java.scripting;
-    requires lombok;
-    requires gson;
-    requires java.sql;
+    requires okhttp3;
 
-
-    opens at.projekt_ui to javafx.fxml;
-    exports at.projekt_ui;
-    exports at.projekt_ui.controller;
-    opens at.projekt_ui.model;
-    exports at.projekt_ui.model;
-    opens at.projekt_ui.controller to javafx.fxml;
+    opens at.projekt_ui to javafx.graphics;
 }
