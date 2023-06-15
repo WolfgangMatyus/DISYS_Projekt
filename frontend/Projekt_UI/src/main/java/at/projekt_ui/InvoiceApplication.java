@@ -3,6 +3,7 @@ package at.projekt_ui;
 import com.dansoftware.pdfdisplayer.JSLogListener;
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -27,7 +28,7 @@ public class InvoiceApplication extends Application {
         btn.setOnAction(event -> {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("http://127.0.0.1:5151/api/v1/invoices/5b39c892-c740-47c2-b4a4-d64d6835e516")
+                    .url("http://127.0.0.1:5151/api/v1/invoices/34ca86e5-156e-43af-bf62-6824164f1c3d")
                     //.url("http://127.0.0.1:5151/api/v1/invoices/{invoiceID}")
                     .build();
 
@@ -44,12 +45,19 @@ public class InvoiceApplication extends Application {
                             Path tempFilePath = Files.createTempFile("invoice_", ".pdf");
                             Files.copy(inputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 
-                            PDFDisplayer displayer = new PDFDisplayer(tempFilePath.toUri().toURL());
-                            displayer.setSecondaryToolbarToggleVisibility(visible);
-                            displayer.setVisibilityOf("sidebarToggle", false);
+                            Platform.runLater(() -> {
+                                PDFDisplayer displayer = null;
+                                try {
+                                    displayer = new PDFDisplayer(tempFilePath.toUri().toURL());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                displayer.setSecondaryToolbarToggleVisibility(visible);
+                                displayer.setVisibilityOf("sidebarToggle", false);
 
-                            primaryStage.setScene(new Scene(new VBox(displayer.toNode())));
-                            primaryStage.show();
+                                primaryStage.setScene(new Scene(new VBox(displayer.toNode())));
+                                primaryStage.show();
+                            });
                         }
                     } else {
                         System.out.println("Failed to retrieve invoice: " + response.code());
