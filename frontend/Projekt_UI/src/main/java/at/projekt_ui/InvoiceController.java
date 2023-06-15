@@ -1,7 +1,6 @@
 package at.projekt_ui;
 
 import at.projekt_ui.model.Invoice;
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -10,19 +9,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 import java.util.UUID;
 
 public class InvoiceController {
-
-    private static final String API_URL = "http://127.0.0.1:5151/api/v1/invoices/";
+    private Stage primaryStage;
 
     @FXML
     private Label POSTLabel;
@@ -39,6 +36,10 @@ public class InvoiceController {
     @FXML
     private WebEngine webEngine;
 
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
     @FXML
     private void initialize() {
         webEngine = invoiceWebView.getEngine();
@@ -47,7 +48,7 @@ public class InvoiceController {
     @FXML
     private void onGenerateInvoiceClick(ActionEvent event) {
         String customerID = customerIDField.getText();
-        String apiUrlCustID = API_URL + customerID;
+        String apiUrlCustID = "http://127.0.0.1:5151/api/v1/invoices/" + customerID;
         UUID[] invoiceID = {null};
 
         Task<String> apiCallTask = new Task<String>() {
@@ -60,16 +61,11 @@ public class InvoiceController {
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-                    while ((inputLine = in.readLine()) != null) {
-                        Invoice invoice = new Gson().fromJson(inputLine, Invoice.class);
+                    try (InputStream in = conn.getInputStream()) {
+                        Invoice invoice = Invoice.fromInputStream(in);
                         invoiceID[0] = invoice.getInvoiceId();
-                        response.append("INVOICE: ").append(invoiceID[0]);
+                        return "INVOICE: " + invoiceID[0];
                     }
-                    in.close();
-                    return response.toString();
                 } else {
                     return "HTTP Error: " + responseCode;
                 }
@@ -98,7 +94,7 @@ public class InvoiceController {
                 int timeout = 10000; // Timeout after 10 seconds
                 long startTime = System.currentTimeMillis();
                 while (System.currentTimeMillis() - startTime < timeout) {
-                    String apiUrlInvoiceID = API_URL + invoiceID;
+                    String apiUrlInvoiceID = "http://127.0.0.1:5151/api/v1/invoices/" + invoiceID;
                     URL url = new URL(apiUrlInvoiceID);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");

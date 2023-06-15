@@ -1,5 +1,11 @@
 package at.projekt_ui.model;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.UUID;
 
 public class Invoice {
@@ -22,4 +28,17 @@ public class Invoice {
 
     private UUID invoiceId;
     private int customerId;
+
+    public static Invoice fromInputStream(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+
+        Gson gson = new Gson();
+        Invoice invoice = gson.fromJson(response.toString(), Invoice.class);
+        return invoice;
+    }
 }
