@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -50,7 +49,7 @@ public class BackendController {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_PDF);
                 headers.setContentDisposition(ContentDisposition.builder("attachment").filename(filename).build());
-
+                System.out.println(data);
                 return ResponseEntity.ok().headers(headers).body(data);
             }
         } else {
@@ -58,33 +57,6 @@ public class BackendController {
         }
     }
 }
-
-/*
-    @GetMapping("/invoices/{invoiceID}")
-    public String getInvoice(@PathVariable UUID invoiceID) throws IOException {
-        String storagePath = InvoiceService.getInvoicesDirectoryPath();
-        String filename = invoiceID + ".pdf";
-        String filePath = storagePath + "/" + filename;
-
-        // Assuming the file is stored locally, read it into a byte array
-        byte[] fileData = readFromFile(filePath);
-
-        // Convert the byte array to Base64 encoded string
-        String base64Data = Base64.getEncoder().encodeToString(fileData);
-
-        return base64Data;
-    }
-
-    private byte[] readFromFile(String filePath) throws IOException {
-        File file = new File(filePath);
-        byte[] data = new byte[(int) file.length()];
-
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(data);
-        }
-
-        return data;
-    }
 
 
     // ----------------------------------------------------------------------------------------
@@ -126,7 +98,3 @@ public class BackendController {
     // Messages:
     // chain: rot (dispatcher), grün (collector), blau (receiver), gelb (pdf generator)
     // chain2: rot (dispatcher), lila (receiver), gelb (pdfgenerator)
-
-}
-
-*/
