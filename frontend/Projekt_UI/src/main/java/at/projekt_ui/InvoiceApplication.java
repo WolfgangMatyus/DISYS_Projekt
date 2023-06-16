@@ -9,7 +9,12 @@ import javafx.stage.Stage;
 public class InvoiceApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("invoice.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("invoice.fxml"));
+        Parent root = loader.load();
+
+        InvoiceController controller = loader.getController();
+        controller.setPrimaryStage(primaryStage); // Übergeben der primaryStage an den Controller
+
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

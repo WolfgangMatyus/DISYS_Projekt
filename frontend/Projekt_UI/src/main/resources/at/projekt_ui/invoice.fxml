@@ -20,10 +20,5 @@
     <Label fx:id="POSTLabel"/>
     <Label fx:id="GETLabel"/>
     <VBox spacing="5.0" alignment="CENTER">
-        <WebView fx:id="invoiceWebView" prefHeight="600" prefWidth="200">
-            <VBox.margin>
-                <Insets left="10" right="10"/>
-            </VBox.margin>
-        </WebView>
     </VBox>
 </VBox>
