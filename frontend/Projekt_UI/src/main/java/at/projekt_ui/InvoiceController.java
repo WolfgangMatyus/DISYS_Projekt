@@ -33,7 +33,7 @@ public class InvoiceController implements Initializable {
 
     private Stage primaryStage;
 
-    private boolean visible;
+    private boolean visible = true;
     private boolean pdfReceived = false;
 
     @FXML
@@ -44,6 +44,9 @@ public class InvoiceController implements Initializable {
 
     @FXML
     private TextField customerIDField;
+
+    @FXML
+    private VBox pdfContainer;
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -96,6 +99,10 @@ public class InvoiceController implements Initializable {
         apiCallPOSTThread.start();
     }
 
+    public void addPDFDisplayerToContainer(PDFDisplayer displayer) {
+        pdfContainer.getChildren().setAll(displayer.toNode());
+    }
+
     public void startGetRequest(UUID invoiceID) {
         Task<Void> apiCallGETTask = new Task<Void>() {
             @Override
@@ -138,6 +145,8 @@ public class InvoiceController implements Initializable {
 
                                         primaryStage.setScene(new Scene(new VBox(displayer.toNode())));
                                         primaryStage.show();
+
+                                        addPDFDisplayerToContainer(displayer);
 
                                         pdfReceived = true;
                                     });

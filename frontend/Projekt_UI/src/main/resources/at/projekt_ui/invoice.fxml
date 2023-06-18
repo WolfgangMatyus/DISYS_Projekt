@@ -19,6 +19,6 @@
     </HBox>
     <Label fx:id="POSTLabel"/>
     <Label fx:id="GETLabel"/>
-    <VBox spacing="5.0" alignment="CENTER">
+    <VBox fx:id="pdfContainer" spacing="5.0" alignment="CENTER">
     </VBox>
 </VBox>
