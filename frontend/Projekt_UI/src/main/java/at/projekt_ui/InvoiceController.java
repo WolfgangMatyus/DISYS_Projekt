@@ -4,15 +4,18 @@ import at.projekt_ui.model.Invoice;
 import com.dansoftware.pdfdisplayer.JSLogListener;
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import okhttp3.*;
 
@@ -20,47 +23,42 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-
-
-
-public class InvoiceController implements Initializable {
+public class InvoiceController {
 
     private Stage primaryStage;
 
-    private boolean visible = true;
     private boolean pdfReceived = false;
 
-    @FXML
-    private Label POSTLabel;
+    private URL url;
+
+    String formattedTime;
+    String apiUrlInvoiceID;
+    UUID[] invoiceID = {null};
+
+    private HostServices hostServices;
 
     @FXML
-    private Label GETLabel;
-
+    private Hyperlink hyperlinkLabel;
     @FXML
     private TextField customerIDField;
-
+    @FXML
+    private Label POSTLabel;
+    @FXML
+    private Label GETLabel;
     @FXML
     private VBox pdfContainer;
 
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialisierungscode hier
-    }
+    public void setPrimaryStage(Stage primaryStage) {this.primaryStage = primaryStage;}
 
     @FXML
     private void onGenerateInvoiceClick(ActionEvent event) {
         String customerID = customerIDField.getText();
         String apiUrlCustID = "http://127.0.0.1:5151/api/v1/invoices/" + customerID;
-        UUID[] invoiceID = {null};
 
         Task<String> apiCallTask = new Task<String>() {
             @Override
@@ -99,10 +97,6 @@ public class InvoiceController implements Initializable {
         apiCallPOSTThread.start();
     }
 
-    public void addPDFDisplayerToContainer(PDFDisplayer displayer) {
-        pdfContainer.getChildren().setAll(displayer.toNode());
-    }
-
     public void startGetRequest(UUID invoiceID) {
         Task<Void> apiCallGETTask = new Task<Void>() {
             @Override
@@ -111,46 +105,34 @@ public class InvoiceController implements Initializable {
                 long startTime = System.currentTimeMillis();
 
                 while (System.currentTimeMillis() - startTime < timeout && !pdfReceived) {
-
+                    // GET Request:
                     OkHttpClient client = new OkHttpClient();
-                    String apiUrlInvoiceID = "http://127.0.0.1:5151/api/v1/invoices/" + invoiceID;
-                    URL url = new URL(apiUrlInvoiceID);
+                    apiUrlInvoiceID = "http://127.0.0.1:5151/api/v1/invoices/" + invoiceID;
+                    url = new URL(apiUrlInvoiceID);
                     System.out.println(url);
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
+                    Request request = new Request.Builder().url(url).build();
                     client.newCall(request).enqueue(new Callback() {
-
                         @Override
                         public void onFailure(Call call, IOException e) {
                             e.printStackTrace();
                         }
-
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             if (response.isSuccessful()) {
-                                try (InputStream inputStream = response.body().byteStream()) {
-                                    Path tempFilePath = Files.createTempFile("invoice_", ".pdf");
-                                    Files.copy(inputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+                                Platform.runLater(() -> {
+                                    try {
+                                    PDFDisplayer displayer = new PDFDisplayer(url);
+                                    pdfContainer.getChildren().setAll(displayer.toNode());
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                                pdfReceived = true;
+                                LocalTime currentTime = LocalTime.now();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                                formattedTime = currentTime.format(formatter);
 
-                                    Platform.runLater(() -> {
-                                        PDFDisplayer displayer = null;
-                                        try {
-                                            displayer = new PDFDisplayer(tempFilePath.toUri().toURL());
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        displayer.setSecondaryToolbarToggleVisibility(visible);
-                                        displayer.setVisibilityOf("sidebarToggle", false);
-
-                                        primaryStage.setScene(new Scene(new VBox(displayer.toNode())));
-                                        primaryStage.show();
-
-                                        addPDFDisplayerToContainer(displayer);
-
-                                        pdfReceived = true;
-                                    });
-                                }
+                                response.close();
                             } else {
                                 System.out.println("Failed to retrieve invoice: " + response.code());
                             }
@@ -164,20 +146,26 @@ public class InvoiceController implements Initializable {
 
         JSLogListener.setOutputStream(System.err);
 
-        primaryStage.setScene(new Scene(new VBox()));
-        primaryStage.show();
+        apiCallGETTask.setOnSucceeded(taskEvent -> {
+            hyperlinkLabel.setText(apiUrlInvoiceID);
+            GETLabel.setText("Creation Time: " + formattedTime);
+        });
 
         apiCallGETTask.setOnFailed(taskEvent -> {
             Throwable exception = apiCallGETTask.getException();
-            GETLabel.setText("Exception: " + exception.getMessage());
         });
 
         Thread taskThread = new Thread(apiCallGETTask);
         taskThread.start();
     }
 
-    public static void main(String[] args) {
-        Application.launch(args);
+    public void openPDF(){
+        hostServices.showDocument(apiUrlInvoiceID);
+    }
+
+    public void setGetHostController(HostServices hostServices)
+    {
+        this.hostServices = hostServices;
     }
 
 }

@@ -14,7 +14,7 @@ public class InvoiceApplication extends Application {
 
         InvoiceController controller = loader.getController();
         controller.setPrimaryStage(primaryStage); // Übergeben der primaryStage an den Controller
-
+        controller.setGetHostController(getHostServices());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
