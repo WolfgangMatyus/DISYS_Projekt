@@ -66,7 +66,7 @@ public class InvoiceService {
 
             PDFGeneratorBackendMessage pdfGeneratorBackendMessage = new Gson().fromJson(pdfGeneratorBackendMessageJSON, PDFGeneratorBackendMessage.class);
 
-            String invoicePath = getInvoicesDirectoryPath() + "\\" + pdfGeneratorBackendMessage.getInvoiceId() + ".pdf";
+            String invoicePath = getInvoicesDirectoryPath() + "/" + pdfGeneratorBackendMessage.getInvoiceId() + ".pdf";
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(invoicePath)) {
                 fileOutputStream.write(pdfGeneratorBackendMessage.getPdfContent());

@@ -41,6 +41,10 @@ public class GeneratorService {
 
             System.out.println("Generator received message from receiver: " + receiverPDFGeneratorMessageString);
 
+            if(receiverPDFGeneratorMessageString.equals("No active charges found!")) {
+                return;
+            }
+
             ReceiverPDFGeneratorMessage receiverPDFGeneratorMessage = new Gson().fromJson(receiverPDFGeneratorMessageString, ReceiverPDFGeneratorMessage.class);
 
             System.out.println("Try to create PDF: " + receiverPDFGeneratorMessage.getInvoiceId() + ".pdf");

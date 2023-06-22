@@ -60,12 +60,12 @@ public class DataCollectorService {
         for(ReceiverPDFGeneratorMessage message : receiverPDFGeneratorMessages) {
             if(message.getInvoiceId().equals(invoiceId)) {
                 for(Station station : message.getStations()) {
-                    if(station.getCharges().isEmpty()) {
+                    if(station.getReceived() == Boolean.FALSE) {
                         isNotCompleted = Boolean.TRUE;
                     }
                 }
             }
         }
-        return isNotCompleted;
+        return !isNotCompleted;
     }
 }

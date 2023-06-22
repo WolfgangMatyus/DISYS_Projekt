@@ -13,10 +13,10 @@ public class StationService {
         try {
             Connection connection = DriverManager.getConnection(url, user, password);
 
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM charge WHERE customer_id= ?;"); // AND invoice_id IS NULL
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM charge WHERE customer_id= ? AND invoice_id IS null;"); // AND invoice_id IS NULL
             statement.setObject(1, customer_id);
             ResultSet resultSet = statement.executeQuery();
-
+            System.out.println(resultSet);
             while (resultSet.next()) {
 
                 Charge charge = new Charge(

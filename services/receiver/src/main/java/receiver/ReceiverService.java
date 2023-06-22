@@ -69,13 +69,14 @@ public class ReceiverService {
                             if(DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).getId() == collectorReceiverMessage.getStationId()) {
 
                                 DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).setCharges(collectorReceiverMessage.getCharges());
+                                DataCollectorService.getReceiverPDFGeneratorMessages().get(i).getStations().get(k).setReceived(Boolean.TRUE);
                             }
 
                         }
                     }
                 }
                 // check if all charges are received
-                if(!DataCollectorService.isAllCollectorDataCompleted(collectorReceiverMessage.getInvoiceId())) {
+                if(DataCollectorService.isAllCollectorDataCompleted(collectorReceiverMessage.getInvoiceId())) {
                     try {
                         ReceiverPDFGeneratorMessage message = DataCollectorService.getReceiverPDFGeneratorMessageByInvoiceId(collectorReceiverMessage.getInvoiceId());
                         DataCollectorService.sendDataToPDFGenerator(message.toJSON(), EXCHANGE_NAME);

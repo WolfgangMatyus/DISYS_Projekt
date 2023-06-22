@@ -9,6 +9,8 @@ public class Station {
 
     private ArrayList<Charge> charges;
 
+    private Boolean received = Boolean.FALSE;
+
     public int getId() {
         return id;
     }
@@ -35,5 +37,13 @@ public class Station {
 
     public void addCharge(Charge charge) {
         this.charges.add(charge);
+    }
+
+    public Boolean getReceived() {
+        return received;
+    }
+
+    public void setReceived(Boolean received) {
+        this.received = received;
     }
 }

@@ -3,19 +3,15 @@ package at.projekt_ui;
 import at.projekt_ui.model.Invoice;
 import com.dansoftware.pdfdisplayer.JSLogListener;
 import com.dansoftware.pdfdisplayer.PDFDisplayer;
-import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import okhttp3.*;
 
@@ -25,7 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ResourceBundle;
 import java.util.UUID;
 
 public class InvoiceController {
@@ -72,6 +67,7 @@ public class InvoiceController {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     try (InputStream in = conn.getInputStream()) {
                         Invoice invoice = Invoice.fromInputStream(in);
+                        clearView();
                         invoiceID[0] = invoice.getInvoiceId();
                         return "INVOICE: " + invoiceID[0];
                     }
@@ -95,6 +91,10 @@ public class InvoiceController {
 
         Thread apiCallPOSTThread = new Thread(apiCallTask);
         apiCallPOSTThread.start();
+    }
+
+    public void clearView() {
+
     }
 
     public void startGetRequest(UUID invoiceID) {
